@@ -1,0 +1,28 @@
+{
+  "name": "moviecataloge",
+  "version": "1.0.0",
+  "description": "a movie catelog ",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js",
+    "build": "tsc",
+    "run": "node dist/index.js"
+  },
+  "author": "Arnab Golder",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "@elastic/elasticsearch": "^8.15.0",
+    "@types/express": "^5.0.0",
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "mongoose": "^8.7.0"
+  }
+}
