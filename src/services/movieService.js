@@ -16,7 +16,8 @@ class MovieService {
   
       //* Create the movie in MongoDB
       const movie = await movieRepository.create(movieData);
-      
+     //* Invalidate the cache after adding the movie
+      await this.invalidateCache('movies');
       //* Index the movie in Elasticsearch
       await esClient.index({
         index: 'movies',
@@ -38,7 +39,15 @@ class MovieService {
       throw {error}
     }
   }
-
+//* cache invalidation 
+  async invalidateCache(key) {
+    try {
+      await this.redisClient.del(key); // Remove the cached data for the given key
+    } catch (error) {
+      throw new Error(`Error invalidating cache: ${error.message}`);
+    }
+  }
+  
 //* search movie by title  
   async searchMoviesByTitle(title) {
     try {

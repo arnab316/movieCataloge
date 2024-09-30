@@ -1,7 +1,9 @@
 import express from 'express';
 const router = express.Router();
 import movieController from  '../../controllers/movieController.js';
-router.post('/movies', movieController.addMovie)
+import { upload, handleFileUpload} from '../../middleware/handleFileUpload.js'
+//* add Movie
+router.post('/movies', upload.single('posterUrl'),handleFileUpload,movieController.addMovie)
 router.get('/search/:title', movieController.searchMoviesByTitle)
 router.get('/movies', movieController.getAllMovies);
 router.get('/hi', (req, res) => {
