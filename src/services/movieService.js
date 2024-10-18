@@ -1,7 +1,7 @@
 import movieRepository from '../repositories/movieRepository.js';
 import redisClient from '../config/redis.js';
 import esClient from '../config/elasticsearch.js';
-
+import {logMessage} from '../utils/logger.js';
 class MovieService {
   
   // Add a new movie and index it in Elasticsearch
@@ -33,17 +33,20 @@ class MovieService {
           posterUrl: movie.posterUrl,
         },
       });
-
+await logMessage('movie-catelog-service', 'info', `movie ${movie._id} added successfully`)
       return movie;
     } catch (error) {
+      await logMessage('movie-catelog-service', 'error', `Error during add movie  ${error.message}`);       
       throw {error}
     }
   }
 //* cache invalidation 
   async invalidateCache(key) {
     try {
-      await this.redisClient.del(key); // Remove the cached data for the given key
+      await this.redisClient.del(key); 
+      await logMessage('movie-catelog-service', 'info', `Cache invalidated for key: ${key}`);
     } catch (error) {
+      await logMessage('movie-catelog-service', 'error', `Error during add movie  ${error.message}`);
       throw new Error(`Error invalidating cache: ${error.message}`);
     }
   }
@@ -83,17 +86,12 @@ class MovieService {
         }
       }
     });
-
       return hits.hits.map(hit => hit._source);
     } catch (error) {
+      await logMessage('movie-catelog-service', 'error', `Error searching for movies by title: ${error.message}`);
       throw new Error(`Error searching for movies by title: ${error.message}`);
     }
   }
-
-
-
-
-
 
 
   //* Get a movie by ID, check Redis cache first
@@ -126,9 +124,10 @@ class MovieService {
   
       //? Cache the movies data in Redis
       await this.cacheMovies('movies', movies);
-  
+      await logMessage('movie-catelog-service', 'info', `succesfully fetched all movies: ${movies._id}`); 
       return movies;
     } catch (error) {
+      await logMessage('movie-catelog-service', 'error', `Error getting all movies: ${error.message}`);
       throw new Error(`Error retrieving all movies: ${error.message}`);
     }
   }
@@ -138,6 +137,7 @@ class MovieService {
   //* Cache movie in Redis with an expiration time of 1 hour
   async cacheMovies(key, movies) {
     try {
+      
       await redisClient.set(key, JSON.stringify(movies), 'EX', 3600); // Cache for 1 hour
     } catch (error) {
       throw new Error(`Error caching movies in Redis: ${error.message}`);
