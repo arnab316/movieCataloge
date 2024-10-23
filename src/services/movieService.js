@@ -53,39 +53,24 @@ await logMessage('movie-catelog-service', 'info', `movie ${movie._id} added succ
   
 //* search movie by title  
   async searchMoviesByTitle(title) {
+    console.log(`recieved  for title: ${title}`);
+    const formattedTitle = title.trim().toLowerCase();
     try {
       const { hits } = await esClient.search({
         index: 'movies',
-      body: {
-        query: {
-          bool: {
-            should: [
-              {
-                fuzzy: {
-                  title: {
-                    value: title.toLowerCase(),
-                    fuzziness: "AUTO"
-                  }
-                }
-              },
-              {
-                prefix: {
-                  title: title.toLowerCase()
-                }
-              },
-              {
-                wildcard: {
-                  title: {
-                    value: `${title.toLowerCase()}*`,
-                    boost: 1.5 
-                  }
-                }
-              }
-            ]
+        body: {
+          query: {
+            query_string: {
+              query: formattedTitle,
+              fields: ["title", "description"],
+              default_operator: "AND"
+            }
           }
         }
-      }
-    });
+      });
+    await logMessage('movie-catelog-service', 'info', `Searching for title: ${title}, found ${hits.hits.length} results.`);
+    // console.log(JSON.stringify(hits, null, 2));
+
       return hits.hits.map(hit => hit._source);
     } catch (error) {
       await logMessage('movie-catelog-service', 'error', `Error searching for movies by title: ${error.message}`);

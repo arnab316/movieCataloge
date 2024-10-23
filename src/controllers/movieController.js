@@ -46,6 +46,7 @@ const searchMoviesByTitle = async (req, res) => {
               message: 'Title query parameter is required',
             });
           }
+          console.log(`Searching for title: ${title}`);
       const movies = await MovieService.searchMoviesByTitle(title);
       res.status(200).json({ 
         success: true, 
