@@ -6,6 +6,8 @@ import { upload, handleFileUpload} from '../../middleware/handleFileUpload.js'
 router.post('/movies', upload.single('posterUrl'),handleFileUpload,movieController.addMovie)
 router.get('/search/:title', movieController.searchMoviesByTitle)
 router.get('/movies', movieController.getAllMovies);
+// router.get('/stream/:movieId', movieController.streamMovie);
+
 router.get('/hi', (req, res) => {
     res.send('Welcome to the Moviecatalog API!');
 })

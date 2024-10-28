@@ -12,6 +12,7 @@ const movieSchema = mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
     duration: { type: Number, required: false }, 
     language: { type: String, required: false },
+    videoFile: { type: String, required: true }
   });
 
 export const Movie = mongoose.model('Movie', movieSchema);

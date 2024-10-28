@@ -3,6 +3,9 @@ import redisClient from '../config/redis.js';
 import esClient from '../config/elasticsearch.js';
 import {logMessage} from '../utils/logger.js';
 class MovieService {
+  constructor() {
+    this.redisClient = redisClient;
+  }
   
   // Add a new movie and index it in Elasticsearch
   async addMovie(movieData) {

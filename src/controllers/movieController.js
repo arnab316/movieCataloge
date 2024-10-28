@@ -1,7 +1,8 @@
 import MovieService from '../services/movieService.js';
 import {logMessage} from '../utils/logger.js'
+import { streamVideo } from '../utils/grpcClient.js';
+import {StatusCodes} from 'http-status-codes';
 
-import {StatusCodes} from 'http-status-codes'
 const handleError = (res, error) => {
     const statusCode = error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR; 
     const errorResponse = {
@@ -33,7 +34,8 @@ const handleError = (res, error) => {
         });
     } catch (error) {
       await logMessage('movie-catalog-service', 'error', `Error adding movie: ${error.message}`);
-        handleError(res, error);
+        // handleError(res, error);
+        console.log(error);
     }
   };
 const searchMoviesByTitle = async (req, res) => {
@@ -73,9 +75,28 @@ const searchMoviesByTitle = async (req, res) => {
     }
   };
   
-
+  const streamMovie = async(req, res) => {
+    const { movieId } = req.params;
+    res.setHeader('Content-Type', 'video/mp4');
+  
+    // Call the streamVideo function and pass in callbacks for streaming
+    streamVideo(
+      movieId,
+      (response) => {
+        res.write(response.videoChunk);
+      },
+      () => {
+        res.end();
+      },
+      (err) => {
+        console.error('Streaming error:', err);
+        res.status(500).send('Error streaming video');
+      }
+    );
+  };
 export default {
     addMovie,
     searchMoviesByTitle,
-    getAllMovies
+    getAllMovies,
+    streamMovie
 }
